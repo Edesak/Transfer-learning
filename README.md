@@ -5,6 +5,6 @@ Most of the code you can find on: https://www.learnpytorch.io/ but a lot of stuf
 Most proud of from this I'm on utils.py  on function plot_most_wrong() witch took me quite a bit of time to crack. 
 All functions has docstring that i believe is quite good. 
 
-The data i used are availible on: https://github.com/mrdbourke/pytorch-deep-learning/tree/main/data witch is part of the course. 
+The data are part of ZTM course and are availible on: https://github.com/mrdbourke/pytorch-deep-learning/tree/main/data
 
 Enjoy!
