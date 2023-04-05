@@ -1,5 +1,5 @@
 # Transfer-learning
-This repository is my storage of my programs that i created while learning from ZTM(Zero to mastery course). 
+This repository is my storage of programs that i created while learning from ZTM(Zero to mastery course). 
 Most of the code you can find on: https://www.learnpytorch.io/ but a lot of stuff was added due to my stuburness not to use Jupyter notebook or Google colab
 
 Most proud of from this I'm on utils.py  on function plot_most_wrong() witch took me quite a bit of time to crack. 
