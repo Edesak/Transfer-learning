@@ -1,16 +1,16 @@
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-from utils import plot_images_clas
+from moduls import utils
 import zipfile
 from pathlib import Path
 import os
-from typing import Tuple
-
+from typing import Tuple, List
 
 NUM_WORKERS = os.cpu_count()
 
 
-def data_prep_imgfolder(path: str, batch_size: int = 32, transforms: Tuple[transforms,transforms] = None, show_imgs: bool = False, num_plots: int = 2):
+def data_prep_imgfolder(path: str, batch_size: int = 32, transforms: Tuple[transforms.Compose, transforms.Compose] = None,
+                        show_imgs: bool = False, num_plots: int = 2) -> Tuple[DataLoader, DataLoader, List[str]]:
     """
     Creating datalaoader from datset with ImageFolder function (expected structure to have data main folder -> train/test -> labels -> images)
 
@@ -50,9 +50,7 @@ def data_prep_imgfolder(path: str, batch_size: int = 32, transforms: Tuple[trans
     class_names = train_data.classes
     if show_imgs:
         for i in range(num_plots):
-            plot_images_clas(dataset=train_data, class_names=class_names)
-
-
+            utils.plot_images_clas(dataset=train_data, class_names=class_names)
 
     train_data_Dataloader = DataLoader(dataset=train_data,
                                        batch_size=batch_size,
@@ -67,7 +65,9 @@ def data_prep_imgfolder(path: str, batch_size: int = 32, transforms: Tuple[trans
 
     return train_data_Dataloader, test_data_Dataloader, class_names
 
-def data_prep(train_path:str,test_path:str, batch_size: int = 32, transform: Tuple = None, show_imgs: bool = False, num_plots: int = 2):
+
+def data_prep(train_path: str, test_path: str, batch_size: int = 32, transform: Tuple = None, show_imgs: bool = False,
+              num_plots: int = 2):
     """
     ***WIP***
     Creating datalaoader from datset with ImageFolder function (expected structure to have data main folder -> train/test -> labels -> images)
@@ -93,7 +93,7 @@ def data_prep(train_path:str,test_path:str, batch_size: int = 32, transform: Tup
         train_dataloader,test_dataloader,class_names = Dataprep(path=dir_path,transform=(train_transform,test_transform))
     """
 
-    #image_path = Path(path)
+    # image_path = Path(path)
     train_dir = train_path
     test_dir = test_path
 
@@ -109,7 +109,7 @@ def data_prep(train_path:str,test_path:str, batch_size: int = 32, transform: Tup
     class_names = train_data.classes
     if show_imgs:
         for i in range(num_plots):
-            plot_images_clas(dataset=train_data, class_names=class_names)
+            utils.plot_images_clas(dataset=train_data, class_names=class_names)
 
     train_data_Dataloader = DataLoader(dataset=train_data,
                                        batch_size=batch_size,

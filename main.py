@@ -1,4 +1,5 @@
 import itertools
+import os
 from pathlib import Path
 
 import numpy
@@ -19,18 +20,23 @@ print(f"Torch version: {torch.__version__}")
 print(f"Torchvision version: {torchvision.__version__}")
 
 log_wandb = False
-EPOCHS = 5
+EPOCHS = 15
+MODEL = models.efficientnet_b2
+WEIGHTS = models.EfficientNet_B2_Weights
+DATASET = "data/pizza_steak_sushi_20_percent"
+IN_FEATURES = 1408 #B0 1280
+
 if log_wandb:
     wandb.init(
         # set the wandb project where this run will be logged
         project="Base_line_tinyVGG_04",
-        name=f"{EPOCHS}_epochs_trans_B0",
+        name=f"{EPOCHS}_epochs_trans_B2_20%",
         # track hyperparameters and run metadata
         config={
 
             "learning_rate": 0.001,
-            "architecture": "EffitientNetB0",
-            "dataset": "CustomDataset_Food101_10%_3classes",
+            "architecture": "EffitientNetB2",
+            "dataset": "CustomDataset_Food101_20%_3classes",
             "epochs": EPOCHS,
         }
     )
@@ -53,7 +59,7 @@ def manual_way():
 
 def automatic_way():
     # From version of pytochvision 0.13+
-    weights = models.EfficientNet_B0_Weights.DEFAULT  # using best version of Weights
+    weights = WEIGHTS.DEFAULT  # using best version of Weights
     auto_transforms = weights.transforms()
     return auto_transforms
 
@@ -61,7 +67,7 @@ def automatic_way():
 maunal_transforms = manual_way()
 auto_trans = automatic_way()
 print(auto_trans)  # See the transform we apply
-train_dataloader, test_dataloader, class_names = data_prep.data_prep_imgfolder(path="data/pizza_steak_sushi",
+train_dataloader, test_dataloader, class_names = data_prep.data_prep_imgfolder(path=DATASET,
                                                                                transforms=(auto_trans, auto_trans),
                                                                                batch_size=32)
 """
@@ -76,24 +82,23 @@ def changes_to_model(model):
 
     model.classifier = nn.Sequential(
         nn.Dropout(p=0.2, inplace=True),
-        nn.Linear(in_features=1280, out_features=3, bias=True)
+        nn.Linear(in_features=IN_FEATURES, out_features=3, bias=True)
     )
     return model
 
 def model_prep(model,weights=None):
     if weights is not None:
         model = model(weights=weights)
-
         model = changes_to_model(model=model)
-        return model
     else:
-        changes_to_model(model=model)
-        return model
+        model = changes_to_model(model=model())
+
+    return model
 
 
 def train_model():
 
-    model = model_prep(model=models.efficientnet_b0, weights=models.EfficientNet_B0_Weights.DEFAULT)
+    model = model_prep(model=MODEL, weights=WEIGHTS.DEFAULT)
 
     torchinfo.summary(model, input_size=(32, 3, 224, 224),
                       col_names=["input_size", "output_size", "num_params", "trainable"],
@@ -107,7 +112,7 @@ def train_model():
                  loss_fn=loss_fn, acc_fn=acc_fn, epochs=EPOCHS, optim=optim, log_to_wandb=log_wandb)
 
     num_images_to_plot = 3
-    test_image_path_list = list(Path("data/pizza_steak_sushi/test").glob("*/*.jpg"))
+    test_image_path_list = list(Path(os.path.join(DATASET, "test")).glob("*/*.jpg"))
     sample_imgs = random.sample(population=test_image_path_list,
                                 k=num_images_to_plot)
 
@@ -117,20 +122,22 @@ def train_model():
     utils.pred_plot_image(model=model, class_names=class_names, device=device, transform=auto_trans,
                           image_path="data/pizza_steak_sushi/testing/Pizza_test.jpg")
 
-    utils.save_model_dict(model, "models/", "TransferLearning_EfffitientB0_base.pth")
+    utils.save_model_dict(model, "models/", "TransferLearning_EfffitientB2_base_15e_20.pth")
 
 
 def test_model():
-    model =  model_prep(model=models.efficientnet_b0())
-    model = utils.load_model("models/TransferLearning_EfffitientB0_base.pth",model=model,device=device)
+    model = model_prep(model=MODEL)
+    model = utils.load_model("models/TransferLearning_EfffitientB2_base_15e_20.pth",model=model,device=device)
     #torchinfo.summary(model, input_size=(32, 3, 224, 224), col_names=["input_size", "output_size", "num_params", "trainable"],col_width=20, row_settings=["var_names"])
 
+    #utils.pred_plot_image(model,"data/pizza_steak_sushi/testing/newspaper.jpg",class_names,device,transform=auto_trans)
+    #utils.pred_plot_image(model, "data/pizza_steak_sushi/testing/burger.jpg", class_names, device,transform=auto_trans)
 
-    utils.plot_most_wrong(model,test_dataloader,device,class_names,10,auto_trans)
-    #utils.plot_confmat_classification(model,test_dataloader,device,class_names)
+    utils.plot_most_wrong(model,test_dataloader,device,class_names,5,auto_trans)
+    utils.plot_confmat_classification(model,test_dataloader,device,class_names)
 
 
 
 
-#train_model()
+train_model()
 test_model()

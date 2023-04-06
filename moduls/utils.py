@@ -60,7 +60,7 @@ def pred_plot_image(model: torch.nn.Module,
                     class_names: List[str],
                     device: str,
                     image_size: Tuple[int, int] = (224, 224),
-                    transform: torchvision.transforms = None):
+                    transform: transforms.Compose = None):
     """
     Predict and plot custom image with label name.
 
@@ -154,12 +154,10 @@ def plot_confmat_classification(model: torch.nn.Module,
 
     preds, y, _ = preds_probs(model, dataloader, device)
 
-    y_preds = torch.cat(preds, dim=0)
-    y_targets = torch.cat(y, dim=0)
-    print(f"Predicted: {y_preds}")
-    print(f"Tatgets: {y_targets}")
+    print(f"Predicted: {preds}")
+    print(f"Tatgets: {y}")
 
-    conf_matrix = conf_matrix(y_preds, y_targets)
+    conf_matrix = conf_matrix(preds, y)
     print(conf_matrix)
     plot_confusion_matrix(conf_mat=conf_matrix.numpy(), figsize=(10, 7), class_names=class_names)
     plt.show()
@@ -182,7 +180,7 @@ def plot_most_wrong(model: torch.nn.Module,
                     device: str,
                     class_names: List[str],
                     num_images: int,
-                    transform: transforms = None,
+                    transform: transforms.Compose = None,
                     applied_mean: bool = True,
                     applied_std: bool = True,
                     fig_size: Tuple[int, int] = (10, 7)):
