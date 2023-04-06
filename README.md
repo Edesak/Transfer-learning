@@ -1,4 +1,4 @@
-# Transfer-learning
+# Transfer learning with Pytorch
 This repository is my storage of programs that i created while learning from ZTM(Zero to mastery course). 
 Most of the code you can find on: https://www.learnpytorch.io/ but a lot of stuff was added and changed due to my stuburness not to use Jupyter notebook or Google colab
 
