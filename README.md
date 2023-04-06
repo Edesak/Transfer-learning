@@ -7,4 +7,6 @@ All functions has docstring that i believe is quite good.
 
 The data are part of ZTM course and are availible on: https://github.com/mrdbourke/pytorch-deep-learning/tree/main/data
 
+You can now test model B0 and B2 from Effitient Net.
+
 Enjoy!
